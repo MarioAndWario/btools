@@ -1,0 +1,180 @@
+# epsilon.inp
+# G-vectors will be used with kinetic energies up to this cutoff (Ry)
+epsilon_cutoff 50.0
+# number of bands to sum over
+number_bands 9999
+# a list of which bands are occupied (1) and which are unoccupied (0)
+band_occupation 17*1 9982*0
+# If you have partially occupied bands (Metal) set
+# number_partial_occup to the number of these bands.
+# And set occupation of these bands to zero in the
+# band_occupation line above.
+# (this is former ncrit)
+#number_partial_occup 0
+# Specify the Fermi level (in eV), if you want implicit doping
+# Note that value refers to energies AFTER scissor shift or eqp corrections.
+#fermi_level 0.0
+# The Fermi level is treated as an absolute value
+# or relative to that found from the mean field (default)
+#fermi_level_absolute
+#fermi_level_relative
+# RECOMMENDED fast FFTW truncation schemes
+# The Coulomb Interaction is cutoff on the edges of
+# the Wigner-Seitz Cell in the non-periodic directions
+# Periodic directions are a1,a2 for slabs and a3 for wires
+#cell_box_truncation
+#cell_wire_truncation
+#cell_slab_truncation
+# Analytic, but non-Wigner-Seitz Cell Truncation
+#spherical_truncation
+# For Spherical Truncation, radius in Bohr
+#coulomb_truncation_radius 10.00
+# Frequency dependence of the inverse dielectric matrix.
+# Set to 0 to compute the static inverse dielectric matrix (default).
+# Set to 2 to compute the full frequency dependent inverse dielectric matrix.
+#frequency_dependence 0
+# Full frequency dependence method for the polarizability.
+# set to 0 for the Adler-Wiser formula (default).
+# set to 1 for the Shishkin and Kresse, Phys. Rev. B 74, 035101, 2006.
+# WARNING: the Shishkin and Kresse method is still under development. Always
+# double check your results against the Adler-Wiser implementation.
+#frequency_dependence_method 0
+# Parameters for the full frequency dependent inverse dielectric matrix.
+# All are in units of eV.
+# Specify the initial frequency, the initial frequency increment,
+# and the Lorentzian broadening.
+##
+#init_frequency should always be set to zero, delta_frequency to a small
+# positive real number, broadening to a small positive real number close to delta_frequency
+#
+# The frequency cutoffs work in the following way: Up until the low_cutoff, the frequency
+#grid will be
+# uniform and spaced by delta_frequency. After the frequency_low_cutoff, the frequency grid will
+# begin to be more sparse with the grid spacing increasing by an amount delta_frequency_step
+# after each grid point. The frequency grid is truncated all together after the frequency_high_cutoff.
+##
+#Default settings:
+# frequency_high_cutoff = 4*frequency_low_cutoff
+# delta_frequency = broadening
+# delta_frequency_step = 1.0 eV
+##
+#Suggestion:
+# frequency_low_cutoff = energy of highest unoccupied state - energy of lowest occupied state
+# broadening: user specified parameter
+##For example,
+#init_frequency 0.0
+#delta_frequency 0.2
+#delta_frequency_step 1.0
+#frequency_low_cutoff 125.0
+#frequency_high_cutoff 500.0
+#broadening 0.2
+# When setting frequency_dependence 2 and frequency_dependence_method 1,
+# use the following parameters for the spectral functions of the polarizability
+# on a frequency grid.
+# Notes:
+# - Only "gcomm_elements" is supported with the Shishkin and Kresse full-
+# frequency-dependence implementation
+# - For accuracy, set "sfrequency_high_cutoff" as the largest transition energy,
+# i.e., (energy of highest unoccupied state) - (energy of lowest occupied state)
+# Default settings:
+# init_sfrequency=0.0
+# delta_sfrequency=delta_frequency
+# delta_sfrequency_step=0.0 (It means that uniform frequency grid is used.)
+# sfrequency_low_cutoff=1.0 eV
+# (sfrequency_low_cutoff can be any value in [0.0,sfrequency_high_cutoff])
+# sfrequency_high_cutoff=frequency_low_cutoff
+# For example,
+#init_sfrequency 0.0
+#delta_sfrequency 0.2
+#delta_sfrequency_step 0.0
+#sfrequency_low_cutoff 1.0
+#sfrequency_high_cutoff 125.0
+# Logging convergence of the head & tail of polarizability matrix with respect to conduction
+#bands.
+# Set to -1 for no convergence test
+# Set to 0 for the 5 column format including the extrapolated values (default).
+# Set to 1 for the 2 column format, real part only.
+# Set to 2 for the 2 column format, real and imaginary parts.
+#full_chi_conv_log -1
+# qx qy qz 1/scale_factor is_q0
+# scale_factor is for specifying values such as 1/3
+# is_q0 = 1 for a small q-vector in semiconductors
+# is_q0 = 2 for a small q-vector in metals
+# is_q0 = 0 for non-zero q-vectors
+# if present the small q-vector should be first in the list
+# You can generate this list with kgrid.x: just set the shifts to zero and use
+# same grid numbers as for WFN. Then replace the zero vector with q0.
+#number_qpoints 1
+begin qpoints
+0.000000000  0.000000000  0.001000000   1.0 1
+0.000000000  0.000000000  0.500000000   1.0 0
+0.000000000  0.500000000  0.000000000   1.0 0
+0.000000000  0.500000000  0.500000000   1.0 0
+end
+# Scissors operator (linear fit of the quasiparticle
+# energy corrections) for the bands in WFN and WFNq.
+# e_cor = e_in + es + edel * (e_in - e0)
+# Defaults below. evs, ev0, ecs, ec0 are in eV.
+# If you have eqp.dat and eqp_q.dat files
+# this information is ignored in favor of the eigenvalues
+# in eqp.dat and eqp_q.dat.
+#evs 0.0
+#ev0 0.0
+#evdel 0.0
+#ecs 0.0
+#ec0 0.0
+#ecdel 0.0
+# or
+#cvfit 0.0 0.0 0.0 0.0 0.0 0.0
+# Set this to use eigenvalues in eqp.dat and eqp_q.dat
+# If not set, these files will be ignored.
+#eqp_corrections
+# Write the bare Coulomb potential V(q+G) to file
+#write_vcoul
+# Matrix Element Communication Method (Chi Sum Comm)
+# Default is gcomm_matrix which is good if nk*nc*nv > nmtx*nfreq
+# If nk*nc*nv < nfreq*nmtx (nk*nv < nfreq since nc~nmtx),
+# use gcomm_elements
+#gcomm_matrix
+#gcomm_elements
+# Communication through MPI or DISK
+# comm_mpi is usually much faster and preferable but if you have only
+# a few CPUs you might not have enough memory to hold wavefunctions
+# comm_disk results in temporary INT_* files being created and it
+# may be faster for a small unit cell and a lot of k-points
+# The default is comm_mpi
+comm_mpi
+#comm_disk
+# Number of pools for distribution of valence bands
+# The default is chosen to minimize memory in calculation
+#number_valence_pools 1
+# By default, the code computes the polarizability matrix, constructs
+# the dielectric matrix, inverts it and writes the result to file epsmat.
+# Use keyword skip_epsilon to compute the polarizability matrix and
+# write it to file chimat. Use keyword skip_chi to read the polarizability
+# matrix from file chimat, construct the dielectric matrix, invert it and
+# write the result to file epsmat.
+#skip_epsilon
+#skip_chi
+# Use traditional simple binary format for epsmat/eps0mat instead of HDF5 file format.
+# Relevant only if code is compiled with HDF5 support.
+#dont_use_hdf5
+# EXPERIMENTAL FEATURES FOR TESTING PURPOSES ONLY
+# 'unfolded BZ' is from the kpoints in the WFN file
+# 'full BZ' is generated from the kgrid parameters in the WFN file
+# See comments in Common/checkbz.f90 for more details
+# Replace unfolded BZ with full BZ
+#fullbz_replace
+# Write unfolded BZ and full BZ to files
+#fullbz_write
+# The requested number of bands cannot break degenerate subspace
+# Use the following keyword to suppress this check
+# Note that you must still provide one more band in
+# wavefunction file in order to assess degeneracy
+#degeneracy_check_override
+# Instead of using the RHO FFT box to perform convolutions, we automatically
+# determine (and use) the smallest box that is compatible with your epsilon
+# cutoff. This also reduces the amount of memory needed for the FFTs.
+# Although this optimization is safe, you can disable it by uncommenting the
+# following line:
+#no_min_fftgrid
