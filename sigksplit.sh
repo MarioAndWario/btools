@@ -7,7 +7,7 @@ OUTPUTPREFIX="KP"
 rm -rf $OUTPUTPREFIX*
 ############################################
 #Combine the two files
-cat ${INPUT_WFN} | awk '{printf(" %10.9f  %10.9f  %10.9f  %d  %d\n",$1,$2,$3,1,0)}' > ${Qfile}
+cat ${INPUT_WFN} | awk '{printf(" %10.9f  %10.9f  %10.9f  %2.1f \n",$1,$2,$3,1.0)}' > ${Qfile}
 
 numofkpts=$(wc -l $Qfile | awk '{print $1}')
 echo "Number of wfn qpoints = $numofkpts"
