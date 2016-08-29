@@ -1,10 +1,10 @@
 #!/bin/bash
 # This script will distribute kpoints list into sigma.inp and prepare the directories
 
-ProtoDir="K_proto"
+ProtoDir="proto"
 InputFile="sigma.inp"
-JobStart=2
-JobEnd=8
+JobStart=1
+JobEnd=2
 for ((ijob=${JobStart};ijob<=${JobEnd};ijob++))
 do
     DirName="K_${ijob}"
@@ -22,7 +22,7 @@ do
     cp -r ${ProtoDir} ${DirName}
     cd ${DirName}   
     # startline=$(grep -n 'begin kpoints' sigma.inp  | awk -F":" '{print $1+1}')
-    sed -i "/begin kpoints/r ../klib/KP${ijob}" ${InputFile}
-    sbatch subsig.sh
+    sed -i "/begin kpoints/r ../libK/KP${ijob}" ${InputFile}
+    #sbatch subsig.sh
     cd ..
 done
