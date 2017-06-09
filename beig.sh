@@ -15,7 +15,7 @@ BANDSSHIFTFILE="eigenvalue.shift"
 Helper1="helper1.dat"
 Helper2="helper2.dat"
 
-sortflag=0
+sortflag=1
 
 #length unit in QE
 if [ -z $1 ]; then
