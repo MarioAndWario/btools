@@ -15,14 +15,7 @@
 # This script will subtract the band indices with (VBM_from - VBM_to)
 ############################################################
 
-VBM_from=13
-VBM_to=9
-
-VBM_diff=$(echo "${VBM_from} - ${VBM_to}" | bc)
-
-echo "================= relabeleqp.sh ================="
-echo "VBM_from = ${VBM_from}, VBM_to = ${VBM_to}"
-echo "VBM_diff = ${VBM_diff}"
+echo "================= eqp_band_combine.sh ================="
 
 EQPFile_1="eqp1.B13_18.dat"
 EQPFile_2="eqp1.B19_34.dat"
