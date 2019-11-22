@@ -3,7 +3,6 @@
 # We need "eqp.dat", "QE.out", "QE.in"
 
 InteqpInput="inteqp.inp"
-EQPfile="eqp.dat"
 QEINPUT="QE.in"
 QEOUTPUT="QE.out"
 KPTFILE="Klength.dat"
@@ -17,18 +16,43 @@ Helper2="helper2.dat"
 
 sortflag=1
 
-#length unit in QE
 if [ -z $1 ]; then
+   EQPfile="eqp.dat"   
+else
+   EQPfile=$1
+fi
+
+if [ ! -z $2 ]; then
+   if [ $2 == "3" ]; then
+      Col="3"
+   else
+      Col="4"
+   fi
+else
+   Col="4"
+fi
+
+echo "We will output Col ${Col} of ${EQPfile}"
+
+#length unit in QE
+if [ -z $3 ]; then
     alat=$(grep -a --text 'alat)' ${QEOUTPUT} | head -1 | awk '{print $5}' )
     bohrradius=0.52917721092
     # transconstant=$(echo $alat $bohrradius | awk '{print $1*$2}')
     transconstant=$(echo $alat $bohrradius | awk '{print $1*$2/2.0/3.14159265359}')
-   echo "alat is $transconstant Angstrom"
+    echo "alat is $transconstant Angstrom"
 else
-    transconstant=$1
-   echo "alat is $transconstant Angstrom"
+    transconstant=$3
+    echo "alat is $transconstant Angstrom"
 fi
 
+if [ -f ${InteqpInput} ]; then
+   VBMindex=$(grep -a --text "number_val_bands_fine" ${InteqpInput} | awk '{print $2}')
+else
+   echo "VBMindex = "
+   read VBMindex
+fi
+echo "VBMindex =  $VBMindex"
 ###############################################################
 #######################  File clearance  ######################
 if [ -f $EIGFILE ]; then
@@ -58,9 +82,7 @@ fi
 # Determine the number of bands in eqp.dat
 numofbnds=$(sed -n "1p" ${EQPfile} | awk '{print $4}')
 # Determine the number of kpoints in eqp.dat
-numofkpts=$(grep -c -E "\b${numofbnds}\b\$" ${EQPfile})
-
-VBMindex=$(grep -a --text "number_val_bands_fine" ${InteqpInput} | awk '{print $2}')
+numofkpts=$(grep -a --text 'number of k points=' $QEOUTPUT | awk -F "=" '{print $2}' | awk '{print $1}')
 
 #Find "reciprocal axes in cartesian coordinates" module and read the starti\ng point for each segment
 #cat $QEOUTPUT | tr -d '\000'
@@ -86,23 +108,22 @@ KLength=0
 echo "========================================================"
 echo "num of kpts = $numofkpts, num of bnds = $numofbnds num of vb = ${VBMindex}"
 for ((i=1;i<=$numofkpts;i++))
-#for ((i=1;i<=5;i++))
 do
     kptline=$(echo $i ${numofbnds} | awk '{print ($1-1)*($2+1)+1}')
     # echo ${kptline}
     if [ $FlagChangeStartingPoint -eq 1 ]; then
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         if [ $HiSymCounter -eq 2 ]; then
             kpttargetline=$(echo $i ${numofbnds} | awk '{print $1*($2+1)+1}')
         else
             kpttargetline=$kptline
         fi
-#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#Read in the high symmetry points in crystal fractional coordinate
+        #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        #Read in the high symmetry points in crystal fractional coordinate
         Gx0=$(grep -a --text -A $HiSymCounter "K_POINTS" $QEINPUT | tail -1 | awk '{print $1}')
         Gy0=$(grep -a --text -A $HiSymCounter "K_POINTS" $QEINPUT | tail -1 | awk '{print $2}')
         Gz0=$(grep -a --text -A $HiSymCounter "K_POINTS" $QEINPUT | tail -1 | awk '{print $3}')
-        
+
         echo "========================================================"
         echo "High symmetry points in crystal fractional coordinate:"
         echo "G0 = ($Gx0, $Gy0, $Gz0)"
@@ -110,14 +131,14 @@ do
         echo "segmentlength = " $segmentlength
 
         echo $segmentlength >> $Helper1
-###########counter for the number of segments
+        ###########counter for the number of segments
         segmentcounter=0
-###########Switch off the flag for changing the starting point
+        ###########Switch off the flag for changing the starting point
         FlagChangeStartingPoint=0
-###########Update High symmetry pointer counter
+        ###########Update High symmetry pointer counter
         HiSymCounter=$(echo $HiSymCounter | awk '{print $1+1}')
 
-       #Read in the next point in crystal fractional coordinates
+        #Read in the next point in crystal fractional coordinates
         Gx=$(sed -n "$kpttargetline p" ${EQPfile} | awk '{print $1}')
         Gy=$(sed -n "$kpttargetline p" ${EQPfile} | awk '{print $2}')
         Gz=$(sed -n "$kpttargetline p" ${EQPfile} | awk '{print $3}')
@@ -125,12 +146,12 @@ do
         # Convert G0 into cartesian coordinates
         Kx0=$(echo $Gx0 $Gy0 $Gz0 $b1x $b2x $b3x | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')
         Ky0=$(echo $Gx0 $Gy0 $Gz0 $b1y $b2y $b3y | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')
-        Kz0=$(echo $Gx0 $Gy0 $Gz0 $b1z $b2z $b3z | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')   
+        Kz0=$(echo $Gx0 $Gy0 $Gz0 $b1z $b2z $b3z | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')
 
         # Convert G into cartesian coordinates
         Kx=$(echo $Gx $Gy $Gz $b1x $b2x $b3x | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')
         Ky=$(echo $Gx $Gy $Gz $b1y $b2y $b3y | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')
-        Kz=$(echo $Gx $Gy $Gz $b1z $b2z $b3z | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')   
+        Kz=$(echo $Gx $Gy $Gz $b1z $b2z $b3z | awk '{printf("%3.8f\n",$1*$4+$2*$5+$3*$6)}')
 
         echo "High symmetry kpoint in cartesian coordinate:"
         echo "K = ($Kx, $Ky, $Kz)"
@@ -142,8 +163,8 @@ do
         DGz=$(echo $Kz $Kz0 | awk '{print $1-$2}')
 
         DLength=$(echo $DGx $DGy $DGz | awk '{printf("%3.8f\n",sqrt($1*$1+$2*$2+$3*$3))}')
-    fi 
-    
+    fi
+
     if [ $i -eq 1 -o $segmentlength -eq 1 ];then
         KLength=$(echo $KLength| awk '{print $1}' )
     else
@@ -156,14 +177,20 @@ do
     echo -e "$KLengthout " >> $KPTFILE
 
     #####################################
-    # Read and transform eigenvalues    
+    # Read and transform eigenvalues
     eigstartline=$(echo $i ${numofbnds} | awk '{print ($i-1)*($2+1)+2}')
     # echo $eigstartline
     eigendline=$(echo $i ${numofbnds} | awk '{print ($i)*($2+1)}')
 
     # echo $eigendline
-    sed -n "${eigstartline},${eigendline} p" ${EQPfile} | awk '{print $4}' | awk 'BEGIN { ORS = "  " } { print }' >> ${TEMPEIGFILE}
+    if [ Col=="3" ]; then
+        sed -n "${eigstartline},${eigendline} p" ${EQPfile} | awk '{print $3}' | awk 'BEGIN { ORS = "  " } { print }' >> ${TEMPEIGFILE}
+    else
+        sed -n "${eigstartline},${eigendline} p" ${EQPfile} | awk '{print $4}' | awk 'BEGIN { ORS = "  " } { print }' >> ${TEMPEIGFILE}
+    fi
+
     echo -e "" >> ${TEMPEIGFILE}
+
     if [ $sortflag -eq 1 ]; then
         tail -1 $TEMPEIGFILE | awk ' {split( $0, a, " " ); asort( a ); for( i = 1; i <= length(a); i++ ) printf( "%s   ", a[i] ); printf( "\n" ); }'>>  $EIGFILE
     fi
@@ -178,7 +205,7 @@ do
         if [ $segmentcounter -eq $segmentlength ]; then
             FlagChangeStartingPoint=1
         fi
-    fi    
+    fi
 
 done
 
