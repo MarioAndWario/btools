@@ -12,7 +12,7 @@
 ############################################################
 
 VBM_from=1
-VBM_to=11
+VBM_to=29
 
 #######################
 # This is relative order
@@ -25,7 +25,7 @@ VBM_to=11
 #      NumofBands_out_end = 3
 #######################
 NumofBands_out_start=1
-NumofBands_out_end=14
+NumofBands_out_end=56
 
 NumofBands_out=$(echo "${NumofBands_out_end} - ${NumofBands_out_start} + 1" | bc)
 
@@ -38,10 +38,10 @@ echo "VBM_diff = ${VBM_diff}"
 if [ $# == "1" ]; then
     EQPFile=$1
 else
-    EQPFile="eqp.dat"
+    EQPFile="eqp.wan.dat"
 fi
 
-EQPShiftFile="eqp1.shift.dat"
+EQPShiftFile="eqp.GW.inteqp.shift.dat"
 
 echo "EQPFile = ${EQPFile} EQPShiftFile = ${EQPShiftFile}"
 
