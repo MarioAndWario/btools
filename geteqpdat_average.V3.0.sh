@@ -44,7 +44,7 @@ echo "TotalLine = ${TotalLine}"
 
 Step=$(echo ${k2line} ${kstartline} | awk '{print $1-$2}')
 
-NumofBands=$(echo ${kstartline} ${k2line} | awk '{print ($2-$1-5)/2}')
+NumofBands=$(echo ${kstartline} ${k2line} | awk '{print $2-$1-4}')
 
 NumofKpts=$(echo ${TotalLine} ${kstartline} ${k2line} | awk '{print ($1-$2+1)/($3-$2)}')
 
@@ -55,19 +55,30 @@ echo "Number of bands : $NumofBands"
 for ((i=1;i<=${NumofKpts};i++))
 do
     kptline=$(echo "${kstartline}+($i-1)*${Step}" | bc)
-    startline=$(echo "${kstartline}+($i-1)*${Step}+4" | bc)
-    endline=$(echo "$startline + $Step - 7" | bc)
+    startline=$(echo "${kstartline}+($i-1)*${Step}+3" | bc)
+    endline=$(echo "$startline + $Step - 5" | bc)
+    # eqp0.dat
+    echo $(sed -n "${kptline} p" ${SigLog}) ${NumofBands} | awk '{printf("%12.9f %12.9f %12.9f %6d \n",$3,$4,$5,$12)}' >> ${Output0}
+    sed -n "${startline}, ${endline} p" ${SigLog} | awk '{printf("%8d  %8d  %20.9f %20.9f \n", 1, $1, $2, $9)}' >> ${Output0}
+
+    # eqp1.dat
+    echo $(sed -n "${kptline} p" ${SigLog}) ${NumofBands} | awk '{printf("%12.9f %12.9f %12.9f %6d \n",$3,$4,$5,$12)}' >> ${Output1}
+    sed -n "${startline}, ${endline} p" ${SigLog} | awk '{printf("%8d  %8d  %20.9f %20.9f \n", 1, $1, $2, $10)}' >> ${Output1}
+
+    # eqp0'.dat
+    echo $(sed -n "${kptline} p" ${SigLog}) ${NumofBands} | awk '{printf("%12.9f %12.9f %12.9f %6d \n",$3,$4,$5,$12)}' >> ${Output0Prime}
+    sed -n "${startline}, ${endline} p" ${SigLog} | awk '{printf("%8d  %8d  %20.9f %20.9f \n", 1, $1, $2, $13)}' >> ${Output0Prime}
+
+    #eqp1'.dat
+    echo $(sed -n "${kptline} p" ${SigLog}) ${NumofBands} | awk '{printf("%12.9f %12.9f %12.9f %6d \n",$3,$4,$5,$12)}' >> ${Output1Prime}
+    sed -n "${startline}, ${endline} p" ${SigLog} | awk '{printf("%8d  %8d  %20.9f %20.9f \n", 1, $1, $2, $14)}' >> ${Output1Prime}
+
+    #eqp1'.dat
+    echo $(sed -n "${kptline} p" ${SigLog}) ${NumofBands} | awk '{printf("%12.9f %12.9f %12.9f %6d \n",$3,$4,$5,$12)}' >> ${Output1_ave}
+    sed -n "${startline}, ${endline} p" ${SigLog} | awk '{printf("%8d  %8d  %20.9f %20.9f \n", 1, $1, $2, ($10+$14)/2.0)}' >> ${Output1_ave}
 
     #echo "startline= $startline"
     #echo "endline = $endline"
-    
-    # eqp0.dat
-    echo $(sed -n "${kptline} p" ${SigLog}) ${NumofBands} | awk '{printf("%12.9f %12.9f %12.9f %6d \n",$3,$4,$5,$12)}' >> ${Output0Prime}
-    sed -n "${startline}, ${endline} p" ${SigLog} | sed -n 'p;n' | awk '{printf("%8d  %8d  %15.6f %15.6f \n", 1, $1, $2, $10)}' >> ${Output0Prime}
-
-    # eqp1.dat
-    echo $(sed -n "${kptline} p" ${SigLog}) ${NumofBands} | awk '{printf("%12.9f %12.9f %12.9f %6d \n",$3,$4,$5,$12)}' >> ${Output1Prime}
-    sed -n "${startline}, ${endline} p" ${SigLog} | sed -n 'p;n' | awk '{printf("%8d  %8d  %15.6f %15.6f \n", 1, $1, $2, $11)}' >> ${Output1Prime}   
 done
 
 # Get number of bands
