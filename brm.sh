@@ -3,6 +3,13 @@
 
 find . -type f -name "eps0mat.h5" -exec rm -f {} \;
 find . -type f -name "epsmat.h5" -exec rm -f {} \;
+find . -type f -name "eps0mat.2.h5" -exec rm -f {} \;
+find . -type f -name "epsmat.2.h5" -exec rm -f {} \;
+find . -type f -name "chi0mat.h5" -exec rm -f {} \;
+find . -type f -name "chimat.h5" -exec rm -f {} \;
+find . -type f -name "chi0mat.2.h5" -exec rm -f {} \;
+find . -type f -name "chimat.2.h5" -exec rm -f {} \;
 find . -type f -name "WFN" -exec rm -f {} \;
-find . -type f -name "WNFq" -exec rm -f {} \;
+find . -type f -name "WFNq" -exec rm -f {} \;
+find . -type f -name "WFNmq" -exec rm -f {} \;
 find . -type f -name "bsemat.h5" -exec rm -f {} \;
