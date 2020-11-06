@@ -1,13 +1,13 @@
 #!/bin/bash -l
 # This script use two broadening's and their corresponding eqp.dat file to extrapolate eqp.dat at zero-broadening!
 
-file="eqp1_noSR.dat"
-broadening1=0.2
-broadening2=0.25
-dir1="../d0.2_b0.2/sig/K_combine"
-dir2="../d0.2_b0.25/sig/K_combine"
+file="eqp1_R.dat"
+broadening1=0.3
+broadening2=0.4
+dir1="../d0.4_b0.3/sig/KP_tot"
+dir2="../d0.4_b0.4/sig/KP_tot"
 
-EQPoutputFile="eqp1_noSR.zero_Broadening.dat"
+EQPoutputFile="eqp1_R.zero_Broadening.dat"
 rm -rf $EQPoutputFile
 
 file1="${dir1}/${file}"
