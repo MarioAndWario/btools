@@ -20,11 +20,11 @@ echo "================= relabeleqp.sh ================="
 echo "VBM_from = ${VBM_from}, VBM_to = ${VBM_to}"
 echo "VBM_diff = ${VBM_diff}"
 
-EQPFile="eqp1.shift.GW.dat"
+EQPFile="eqp.GWwan.dat"
 
 EQPmfFile="eqp.mf.dat"
 
-EQPShiftFile="eqp1.shift.dat"
+EQPShiftFile="eqp.mf+GWwan.dat"
 
 EQPcomboFile="eqp.combo.dat"
 
