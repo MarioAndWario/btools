@@ -1,5 +1,9 @@
 #!/bin/bash
-file="eps.out"
+if [ $# -gt 0 ]; then
+    file=$1
+else
+    file="ce1.out"
+fi
 #################
 # Real frequencies
 realfreqstartline=$(grep -n 'Real-axis frequencies' ${file} | awk -F ":" '{print $1+1}')
