@@ -7,4 +7,4 @@ fi
 
 fileout="chi00.txt"
 
-grep 'chi_eh(  G =     0    0    0, Gp =     0    0    0 )' ${file} | awk '{print $14,$15}' > ${fileout}
+grep '(  G =     0    0    0, Gp =     0    0    0 )' ${file} | awk '{print $14,$15}' > ${fileout}
