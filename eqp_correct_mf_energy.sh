@@ -16,15 +16,20 @@ VBM_to=1
 
 VBM_diff=$(echo "${VBM_from} - ${VBM_to}" | bc)
 
+if [ $# -ne 2 ]; then
+    echo "Usage eqp_correct_mf_energy.sh [eqp_mf] [eqp_gw] "
+    exit 123
+else
+    EQPmfFile=$1
+    EQPFile=$2
+fi
+
 echo "================= relabeleqp.sh ================="
 echo "VBM_from = ${VBM_from}, VBM_to = ${VBM_to}"
 echo "VBM_diff = ${VBM_diff}"
+echo "EQPmfFile = $EQPmfFile EQPFile = $EQPFile"
 
-EQPFile="eqp.GW.2018.dat"
-
-EQPmfFile="eqp.mf.dat"
-
-EQPShiftFile="eqp.mf+GW2018.dat"
+EQPShiftFile="eqp.combined.dat"
 
 EQPcomboFile="eqp.combo.dat"
 
@@ -62,5 +67,7 @@ do
     sed -n "$kptline p" $EQPFile >> ${EQPShiftFile}
     sed -n "$eqpline_start, $eqpline_end p" $EQPcomboFile | awk -v vbm_diff="$VBM_diff" '{printf("%8d %8d %17.9f %17.9f \n", $1, $2-vbm_diff, $7, $4)}' >> ${EQPShiftFile}
 done
+
+rm -rf ${EQPcomboFile}
 
 echo "================================================="
